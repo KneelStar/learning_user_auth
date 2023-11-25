@@ -3,8 +3,10 @@ This is a learning excersie for me to learn how user authentication works.
 Basic Goals:
     Signup
     Login
+    Logout
     Remember Me
     Forgot Password
+    Logout everywhere
 
 Advanced goals:
     Email Verification
@@ -22,11 +24,18 @@ CREATE TABLE Users (
     email VARCHAR(100) NOT NULL,
     passwordHash VARCHAR(255) NOT NULL,
     passwordSalt VARCHAR(50) NOT NULL,
-    resetPasswordToken VARCHAR(100),
-    resetPasswordTokenExpiry TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 1 HOUR) ,
     isEmailVerified BOOLEAN DEFAULT 0,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Reset Password Table
+CREATE TABLE ResetPasswords (
+    resetTokenID INT PRIMARY KEY AUTO_INCREMENT,
+    userID INT NOT NULL,
+    resetToken VARCHAR(100) NOT NULL,
+    resetTokenExpiry TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 1 HOUR),
+    FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 
 -- Email Verification Table
@@ -63,9 +72,17 @@ CREATE TABLE Nonces (
     expiration_time TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 5 HOUR)
 );
 
-
 Learning Sources Used:
     https://www.youtube.com/playlist?list=PL4JDh0LtP7jr0nNuoW-KB-O2uABkaMhL1
+    https://youtu.be/UBUNrFtufWo?si=oELr4RowuE496C3
+    https://youtu.be/O1cRJWYF-g4?si=pTQaj3rIeR-CIs8c
+    https://youtu.be/rhi1eIjSbvk?si=sCaV7UX6E3B6W0HM
+    https://youtu.be/uj_4vxm9u90?si=DepUqPBHmS5Y_CqM
+    https://youtu.be/iD49_NIQ-R4?si=ORXCto71d92VcH-x
+    https://youtu.be/3pZ3Nh8tgTE?si=sGmPEwUes9PH1AYB
+    https://youtu.be/ZV5yTm4pT8g?si=e_rZpjG5FBKhQazc
+    https://youtu.be/FVmxtmzyrSw?si=IxOpWStgQ8nmEh2l
+    https://youtu.be/Tw5LupcpKS4?si=Sk3qjbEq2uq1pk7S
     ChatGpt
 
 Side note, these are the commands to create a virtual env, and start the virtual env
