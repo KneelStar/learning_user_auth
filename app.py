@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from db import getDatabaseConnection
 from input_validation import user_input_validation
 from security import *
+import User
 
 app = Flask(__name__)
 
@@ -33,16 +34,13 @@ def home():
 def signup():
     args = request.form
 
-    if(user_input_validation):
-        pass
-
-    generated_salt = get_random_salt()
-    hashed_pass = hash_password(args["Password"], generated_salt)
-
-    db = getDatabaseConnection()
+    valid_input, message = user_input_validation(args)
+    if(not valid_input):
+        return message, 409
     
-    db.close
+    user = User(args["Username"], args["Email"], args["Password"]).create_user_in_db
     return 'User Signed Up'
+    
 
 @app.route('/login/', methods = ["POST"])
 def login():

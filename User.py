@@ -7,31 +7,38 @@ class User:
         self.user_id = None
         self.username = username
         self.email = email
-        self.password_hash = self.hash_password(password)
         self.password_salt = self.generate_salt()
+        self.password_hash = self.hash_password(password, self.password_salt)
         self.email_verified = False
         self.email_verification_token = self.generate_token()
-        self.email_verification_expiry = datetime.utcnow() + timedelta(hours=1)
+        self.email_verification_expiry = datetime.utcnow() + timedelta(days=10)
         self.sessions = []
         self.reset_password_token = None
         self.reset_password_token_expiry = None
 
-    def hash_password(self, password):
-        salt = bcrypt.gensalt()
+    def hash_password(self, password, salt):
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed_password.decode('utf-8')
 
     def generate_salt(self):
-        return secrets.token_hex(16)
+        return bcrypt.gensalt()
 
     def generate_token(self):
         return secrets.token_hex(32)
 
-    def create_user(self):
+    def create_user_in_db(self):
         # Placeholder for database interaction to create a new user
         # Replace this with your actual database logic
         # Store user details including hashed password and salt
-        self.user_id = 1  # Assume user_id is generated or retrieved from the database
+        
+        # connect to db
+        # try:
+        #   add user to database
+        #   return success
+        # catach:
+        #   return error
+        # return generic failure
+        pass
 
     def login(self, password):
         # Placeholder for login logic
@@ -89,7 +96,7 @@ class User:
 
 # Example usage:
 new_user = User("john_doe", "john.doe@example.com", "secure_password123")
-new_user.create_user()
+new_user.create_user_in_db()
 
 # Simulate a login attempt
 login_successful = new_user.login("secure_password123")
