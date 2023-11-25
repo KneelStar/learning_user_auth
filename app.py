@@ -37,9 +37,13 @@ def signup():
     valid_input, message = user_input_validation(args)
     if(not valid_input):
         return message, 409
+
+    valid_nonce, message = nonce_validation(args["Nonce"]
+    if(not valid_once):
+        return message, 409
     
-    user = User(args["Username"], args["Email"], args["Password"]).create_user_in_db
-    return 'User Signed Up'
+    user = User(args["Username"], args["Email"], args["Password"]).create_user_in_db()
+    return 'User Signed Up
     
 
 @app.route('/login/', methods = ["POST"])
