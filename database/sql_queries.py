@@ -1,0 +1,7 @@
+count_if_username_exist_in_db = "SELECT COUNT(*) FROM Users WHERE username = %s"
+count_if_email_exist_in_db = "SELECT COUNT(*) FROM Users WHERE email = %s"
+count_if_non_expired_nonce_exist_in_db = "SELECT COUNT(*) FROM Nonces WHERE nonce_value = %s AND expiration_time > NOW()"
+delete_nonce = "DELETE FROM Nonces WHERE nonce_value = %s"
+add_user_to_db = "INSERT INTO Users (username, email, passwordHash, passwordSalt) VALUES (%s, %s, %s, %s)"
+get_user_id_using_username = "SELECT userID FROM Users WHERE username = %s"
+add_email_verification_token_to_email_veri_table = "INSERT INTO EmailVerifications (userID, verificationToken) VALUES (%s, %s)"

@@ -10,6 +10,7 @@ Basic Goals:
 
 Advanced goals:
     Email Verification
+    Rate Limiting
     2 Step Verification
     Biometric Verification
     Single Sign On

@@ -1,0 +1,2 @@
+1. Need to make sure password hash is less than or equal to 255 characters
+2. When creating a nonce for a signup, login, forgot pass, or any replay attack vector, make sure it's of a resnoable length (https://www.google.com/search?channel=fs&client=ubuntu-sn&q=reasonable+size+of+nonce)
