@@ -73,14 +73,15 @@ class User:
             print(e)
             return False, "Error Occured While Signing Up User" 
 
-    def login(self, password):
+    def validate_password(self, password):
         # Placeholder for login logic
         # Check if the provided password matches the hashed password
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+    
+    def create_session(self):
+        pass
 
     def is_logged_in(self):
-        # Placeholder for checking if the user is logged in
-        # Replace this with your actual session management logic
         return bool(self.get_current_session())
 
     def forgot_password(self):
@@ -88,39 +89,75 @@ class User:
         # Replace this with your actual password reset logic
         self._reset_password_token = self.generate_token()
 
+    def set_user_id(self, user_id):
+        self._user_id = user_id
+
     def get_user_id(self):
         return self._user_id
+
+    def set_user_name(self, user_name):
+        self._user_name = user_name
 
     def get_username(self):
         return self._username
 
+    def set_email(self, email):
+        self._email = email
+
     def get_email(self):
         return self._email
+
+    def set_password_hash(self, password_hash):
+        self._password_hash = password_hash
 
     def get_password_hash(self):
         return self._password_hash
 
+    def set_password_salt(self, password_salt):
+        self._password_salt = password_salt
+
     def get_password_salt(self):
         return self._password_salt
     
+    def set_is_email_verified(self, is_email_verified):
+        self._is_email_verified = is_email_verified
+
     def get_is_email_verified(self):
         return self._is_email_verified
     
+    def get_created_at(self, created_at):
+        self._created_at = created_at
+
     def get_created_at(self):
         return self._created_at
     
+    def set_updated_at(self, updated_at):
+        self._updated_at = updated_at
+
     def get_updated_at(self):
         return self._updated_at
+
+    def set_reset_password_token(self, reset_password_token):
+        self._reset_password_token = reset_password_token
 
     def get_reset_password_token(self):
         return self._reset_password_token
 
+    def set_reset_password_token_expiry(self, refresh_password_token_expiry):
+        self._reset_password_token_expiry = refresh_password_token_expiry
+
     def get_reset_password_token_expiry(self):
         return self._reset_password_token_expiry
 
+    def set_email_verification_token(self, email_verification_token):
+        self._email_verification_token = email_verification_token
+    
     def get_email_verification_token(self):
         return self._email_verification_token
 
+    def set_email_verification_token_expiry(self, email_verification_token_expiry):
+        self._email_verification_token_expiry = email_verification_token_expiry
+        
     def get_email_verification_token_expiry(self):
         return self._email_verification_token_expiry
 

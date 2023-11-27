@@ -40,11 +40,15 @@ def signup():
     if(not valid_nonce):
         return [message, request.form], 409
     
-    user = User(args["Username"], args["Email"])
+    user = User()
+    user.set_user_name(args["Username"])
+    user.set_email(args["Email"])
+
     successful_signup, message = user.create_user_in_db(args["Password"])
     if(not successful_signup):
         return [message, request.form], 409
     
+    user.create_session()
     #send session cookie
     #send verification email
     return 'User Signed Up, !Logged In, and !Verification Email Sent'
@@ -52,7 +56,36 @@ def signup():
 
 @app.route('/login/', methods = ["POST"])
 def login():
-    pass
+    args = request.form
+    
+    #user input validation. user can use username and email to login
+    valid_input, message = [None, None]
+    if(args.has_key('Username')):
+        valid_input, message = is_valid_username(args["Username"])
+    else:
+        valid_input, message = is_valid_email(args["Email"])
+
+    if(not valid_input):
+        return [message, request.form], 409
+    
+    #nonce validation
+    valid_nonce, message = nonce_validation(args["Nonce"])
+    if(not valid_nonce):
+        return [message, request.form], 409
+    
+    #create user
+    user = User()
+    user.set_email(args["Email"])
+    
+    #check password
+    valid_password, message = user.validate_password(args["Password"])
+    if(not valid_password):
+        return [message, request.form], 409
+    
+    #create session
+    user.create_session()
+    #send session cookie
+    return "User logged in"
 
 @app.route('/forgot-password/', methods = ["POST"])
 def forgot_password():
