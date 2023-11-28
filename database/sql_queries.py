@@ -4,4 +4,8 @@ count_if_non_expired_nonce_exist_in_db = "SELECT COUNT(*) FROM Nonces WHERE nonc
 delete_nonce = "DELETE FROM Nonces WHERE nonce_value = %s"
 add_user_to_db = "INSERT INTO Users (username, email, passwordHash, passwordSalt) VALUES (%s, %s, %s, %s)"
 get_user_id_using_username = "SELECT userID FROM Users WHERE username = %s"
+get_user_id_using_email = "SELECT userID FROM Users WHERE email = %s"
+get_username_using_user_id = "SELECT username FROM Users WHERE userID = %s"
+get_email_using_username = "SELECT email FROM Users WHERE userID = %s"
+get_password_hash_using_user_id = "SELECT passwordHash FROM Users WHERE userID = %s"
 add_email_verification_token_to_email_veri_table = "INSERT INTO EmailVerifications (userID, verificationToken) VALUES (%s, %s)"

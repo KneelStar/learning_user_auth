@@ -84,6 +84,8 @@ Learning Sources Used:
     https://youtu.be/ZV5yTm4pT8g?si=e_rZpjG5FBKhQazc
     https://youtu.be/FVmxtmzyrSw?si=IxOpWStgQ8nmEh2l
     https://youtu.be/Tw5LupcpKS4?si=Sk3qjbEq2uq1pk7S
+    https://www.youtube.com/watch?v=_LMiUOYDxzE
+    https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal
     ChatGpt
 
 Side note, these are the commands to create a virtual env, and start the virtual env
