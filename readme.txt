@@ -14,6 +14,7 @@ Advanced goals:
     2 Step Verification
     Biometric Verification
     Single Sign On
+    Reduce session db quries by implementing jwt like features
 
 
 Database Schema for this excersie:
@@ -53,7 +54,7 @@ CREATE TABLE Sessions (
     sessionID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT NOT NULL,
     sessionToken VARCHAR(100) NOT NULL,
-    sessionExpiry TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 1 MONTH),
+    sessionExpiry TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 1 DAY),
     FOREIGN KEY (userID) REFERENCES Users(userID)
 );
 

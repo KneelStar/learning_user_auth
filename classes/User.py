@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 import database.db as db
 from database.sql_queries import *
+from utils.constants import *
 
 '''
 User instance variables:
@@ -48,7 +49,7 @@ class User:
             self._username = identifier
             self.get_basic_info_of_user_from_db(by_email=False)
 
-    def generate_token(self):
+    def generate_forgot_pass_or_session_token(self):
         return secrets.token_hex(32)
 
     def get_basic_info_of_user_from_db(self, by_email:bool):
@@ -67,20 +68,57 @@ class User:
                 self.set_email(cursor.fetchone()[0])
 
     def validate_password(self, password:str):
-        # Placeholder for login logic
-        # Check if the provided password matches the hashed password
         is_it_valid_password = bcrypt.checkpw(password.encode('utf-8'), self.get_password_hash().encode('utf-8'))
         return is_it_valid_password, "Username/Email/Password incorrect" if not is_it_valid_password else "Password is valid"
-    
+
     def create_session(self, flag:str):
+        #valid session for 1 day    
+        if flag == 'regular':
+            try:
+                with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+                    cursor.execute(create_regular_session_using_userid,(self.get_user_id(), self.get_current_session(),))
+                    db_connection.commit()
+                return True, SECONDS_IN_1_DAY, "Session created, and saved to the db with validity of 1 day"
+            except Exception as e:
+                print(e)
+                return False, None, "Login Error. Coudn't create session with regular flag"
+
+        #valid session for 1 week
         if(flag == 'remember-me'):
-            pass
-        elif flag == 'mobile':
-            pass
-        elif flag == 'sso':
-            pass
-        else:
-            pass
+            try:
+                with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+                    cursor.execute(create_week_long_session_using_userid,(self.get_user_id(), self.get_current_session(),))
+                    db_connection.commit()
+                return True, SECONDS_IN_WEEK, "Session created, and saved to the db with validity of 1 week"
+            except Exception as e:
+                print(e)
+                return False, None, "Login Error. Coudn't create session with remember me flag"
+
+        #valid session for 1 month                    
+        if flag == 'mobile':
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, None, "Login Error. Coudn't create session with mobile flag"
+            
+        if flag == 'sso':
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, None, "Login Error. Coudn't create session with sso flag"
+        
+        return False, None, "Login Error. Coudn't create session"
+    
+    def send_cookie(self):
+        pass
+
+    def validate_cookie(self):
+        pass
+
+    def send_email_verification(self):
+        #create a modal notifying the status (success or failure) of verification email to the user (https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal)
         pass
 
     def is_logged_in(self):
@@ -89,7 +127,7 @@ class User:
     def forgot_password(self):
         # Placeholder for generating a password reset token
         # Replace this with your actual password reset logic
-        self.set_reset_password_token(self.generate_token())
+        self.set_reset_password_token(self.generate_forgot_pass_or_session_token())
 
     def set_user_id(self, user_id:int):
         self._user_id = user_id
@@ -168,7 +206,12 @@ class User:
     def get_email_verification_token_expiry(self):
         return self._email_verification_token_expiry
 
+    def set_current_session(self):
+        self._current_session = self.generate_forgot_pass_or_session_token()
+    
     def get_current_session(self):
+        if not self._current_session:
+            self.set_current_session()
         return self._current_session
     
     def get_current_session_expiry(self):

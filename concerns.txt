@@ -1,3 +1,4 @@
 1. Need to make sure password hash is less than or equal to 255 characters
 2. When creating a nonce for a signup, login, forgot pass, or any replay attack vector, make sure it's of a resnoable length (https://www.google.com/search?channel=fs&client=ubuntu-sn&q=reasonable+size+of+nonce)
 3. Using blueprints could make the code more readable, and modulare. will i try it? ¯\_(ツ)_/¯
+4. When logging in, if user already has an auth cookie, destroy that cookie before creating a new one. Only one account at a time per browser. Multiple accounts may be possible with url params like docs.google.com/u/{account_num}
