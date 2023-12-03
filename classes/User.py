@@ -86,7 +86,10 @@ class User:
         #valid session for 1 week
         if(flag == 'remember-me'):
             try:
-                pass
+                with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+                    cursor.execute(create_week_long_session_using_userid,(self.get_user_id(), self.get_current_session(),))
+                    db_connection.commit()
+                return True, SECONDS_IN_WEEK, "Session created, and saved to the db with validity of 1 week"
             except Exception as e:
                 print(e)
                 return False, None, "Login Error. Coudn't create session with remember me flag"
