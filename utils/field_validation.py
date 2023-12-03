@@ -1,6 +1,7 @@
 import re
 import database.db as db
 from database.sql_queries import *
+from flask import Request
 
 def is_valid_username(username):
     if '@' in username:
@@ -83,3 +84,28 @@ def signup_input_validation(username, email, password):
         return False, message
 
     return True, "Input is valid."
+
+def check_if_session_exists_in_db(session:str):
+    with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+        cursor.execute(count_if_session_exist_in_db, (session,))
+        result = cursor.fetchone()[0]
+        
+        if result == 1:
+            return True
+    
+    return False
+
+def check_if_authenticated(request:Request):
+    cookie = request.cookies
+    
+    if not cookie:
+        return False, "Please login to view cock"
+    
+    session_id = cookie.get("login_session")
+
+    does_session_exist_in_db = check_if_session_exists_in_db(session_id)
+    if not does_session_exist_in_db:
+        return False, "Please login to view cock"
+    
+    return True, "User is authenticated/logged in"
+

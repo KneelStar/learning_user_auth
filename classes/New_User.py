@@ -7,7 +7,8 @@ class New_User:
         self._username = username
         self._email = email
         self._password_salt = self.generate_salt()
-        self._password_hash = self.hash_password(password, self._password_salt) 
+        self._password_hash = self.hash_password(password, self._password_salt)
+        self.save_user_to_db()
 
     def generate_salt(self):
         return bcrypt.gensalt()
