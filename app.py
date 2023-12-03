@@ -28,8 +28,6 @@ app = Flask(__name__)
 def home():
     return render_template('website/cock.html')
 
-import utils.user_email_verification
-
 @app.route('/signup/', methods = ["POST"])
 def signup():
     args = request.form
@@ -42,7 +40,7 @@ def signup():
     if(not valid_nonce):
         return [message, args], 409
     
-    new_user_saved_to_db, message = New_User(args["Username"], args["Email"], args["Password"]).save_user_to_db()
+    new_user_saved_to_db, message = New_User(args["Username"], args["Email"], args["Password"])
 
     if(not new_user_saved_to_db):
         return [message, request.form], 409
@@ -91,8 +89,11 @@ def login():
         return [message, request.form], 409
     
     #create session
-    user.create_session(flag="regular")
-    #send session cookie
+    was_session_created, message = user.create_session(flag="regular")
+    if not was_session_created:
+        return [message, request.form], 409
+    
+    #send session cookie ((hostonly vs httponly), samesite, sessiontoken, username, secure?)
     return "User logged in"
 
 @app.route('/forgot-password/', methods = ["POST"])

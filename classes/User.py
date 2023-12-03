@@ -72,15 +72,45 @@ class User:
         is_it_valid_password = bcrypt.checkpw(password.encode('utf-8'), self.get_password_hash().encode('utf-8'))
         return is_it_valid_password, "Username/Email/Password incorrect" if not is_it_valid_password else "Password is valid"
     
+    #refactor with chatgpt
     def create_session(self, flag:str):
         if(flag == 'remember-me'):
-            pass
-        elif flag == 'mobile':
-            pass
-        elif flag == 'sso':
-            pass
-        else:
-            pass
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, "Login Error. Coudn't create session with remember me flag"
+                    
+        if flag == 'mobile':
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, "Login Error. Coudn't create session with mobile flag"
+            
+        if flag == 'sso':
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, "Login Error. Coudn't create session with sso flag"
+            
+        if flag == 'regular':
+            try:
+                pass
+            except Exception as e:
+                print(e)
+                return False, "Login Error. Coudn't create session with regular flag"
+
+        return False, "Login Error. Coudn't create session"
+    
+    def send_cookie(self):
+        pass
+
+    def validate_cookie(self):
+        pass
+
+    def send_email_verification(self):
         pass
 
     def is_logged_in(self):

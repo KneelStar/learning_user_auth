@@ -14,6 +14,7 @@ Advanced goals:
     2 Step Verification
     Biometric Verification
     Single Sign On
+    Reduce session db quries by implementing jwt like features
 
 
 Database Schema for this excersie:
