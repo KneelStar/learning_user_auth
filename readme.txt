@@ -3,8 +3,8 @@ This is a learning excersie for me to learn how user authentication works.
 Basic Goals:
     Signup
     Login
-    Logout
     Remember Me
+    Logout
     Forgot Password
     Logout everywhere
 

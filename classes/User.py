@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import database.db as db
 from database.sql_queries import *
 from utils.constants import *
+from flask import Request
 
 '''
 User instance variables:
@@ -111,7 +112,16 @@ class User:
         
         return False, None, "Login Error. Coudn't create session"
     
-    def send_cookie(self):
+    def logout(self, request:Request):
+        flag = request.form.get["Flag"]
+        cookie = request.cookies
+
+        if flag == "regular":
+            # logout current session
+            pass
+        if flag == "all":
+            # logout all session
+            pass
         pass
 
     def validate_cookie(self):

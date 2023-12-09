@@ -95,9 +95,7 @@ def check_if_session_exists_in_db(session:str):
     
     return False
 
-def check_if_authenticated(request:Request):
-    cookie = request.cookies
-    
+def check_if_authenticated(cookie:dict[str, str]):
     if not cookie:
         return False, "Please login to view cock"
     

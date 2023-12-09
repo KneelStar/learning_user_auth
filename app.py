@@ -29,8 +29,9 @@ app = Flask(__name__)
 @app.route('/', methods=["GET"])
 def home():
     response = make_response()
+    cookie = request.cookies
 
-    is_user_authenticated, message = check_if_authenticated(request)
+    is_user_authenticated, message = check_if_authenticated(cookie)
     if not is_user_authenticated:
         return create_error_response(response, 403, message, None)
 
@@ -106,6 +107,43 @@ def login():
     #send session cookie ((hostonly vs httponly), samesite, sessiontoken, username, secure?)
     message = "User logged in"
     return create_login_success_response(user, response, message, session_validity_amount, "Lax")
+
+@app.route('/logout/', methods = ["POST"])
+def logout():
+    args = request.form
+    response = response()
+    cookie = request.cookies
+    session_token = cookie.get("login_session")
+
+    #nonce validation
+    valid_nonce, message = nonce_validation(args["Nonce"])
+    if(not valid_nonce):
+        return create_error_response(response, 409, message, args)
+    
+    #check if user is authenticated
+    is_user_authenticated, message = check_if_authenticated(cookie)
+    if not is_user_authenticated:
+        return create_error_response(response, 403, message, None)
+    
+    #create the user
+    userID = None
+    with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+        cursor.execute(get_user_id_using_session_token,(session_token,))
+        userID = cursor.fetchone()[0]
+    
+    user = User(userID, init_by_email=False)
+
+    # WONT WORK BECAUSE SET CREATES A NEW RANDOM SESSION FOR THAT INSTANCE OF USER 
+    # BASED ON THE ASSUMPTION THAT SET METHOD WILL ONLY BE CALLED WHEN CREATING 
+    # NEW SESSION. MAYBE RENAMING IT TO USER.CREATE_NEW_SESSION() AND THEN 
+    # SET_SESSION() CAN BE USED FOR THIS ?????
+    # user.set_current_session(session_token)
+    
+    #delete session from db
+    was_session_deleted, message = user.logout(cookie)
+
+    #delete cookie
+    pass
 
 @app.route('/forgot-password/', methods = ["POST"])
 def forgot_password():
