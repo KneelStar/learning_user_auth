@@ -5,8 +5,8 @@ Basic Goals:
     Login
     Remember Me
     Logout
-    Forgot Password
     Logout everywhere
+    Forgot Password
 
 Advanced goals:
     Email Verification
