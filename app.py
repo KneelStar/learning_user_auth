@@ -29,9 +29,11 @@ app = Flask(__name__)
 @app.route('/', methods=["GET"])
 def home():
     response = make_response()
+    cookie = request.cookies
 
-    is_user_authenticated, message = check_if_authenticated(request)
+    is_user_authenticated, message = check_if_authenticated(cookie)
     if not is_user_authenticated:
+        message = "Please login to view cock"
         return create_error_response(response, 403, message, None)
 
     return render_template('website/cock.html')
@@ -40,6 +42,12 @@ def home():
 def signup():
     args = request.form
     response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if is_user_authenticated:
+        message = "You are already logged in silly"
+        return create_error_response(response, 403, message, None)
 
     valid_input, message = signup_input_validation(args["Username"], args["Email"], args["Password"])
     if not valid_input:
@@ -70,6 +78,12 @@ def signup():
 def login():
     args = request.form
     response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if is_user_authenticated:
+        message = "You are already logged in silly"
+        return create_error_response(response, 403, message, None)
     
     #user input validation. user can use username or email, and password to login
     valid_input, message = [None, None]
@@ -106,6 +120,52 @@ def login():
     #send session cookie ((hostonly vs httponly), samesite, sessiontoken, username, secure?)
     message = "User logged in"
     return create_login_success_response(user, response, message, session_validity_amount, "Lax")
+
+@app.route('/logout/', methods = ["POST"])
+def logout():
+    args = request.form
+    response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if not is_user_authenticated:
+        message = "You are not even logged in"
+        return create_error_response(response, 403, message, None)
+
+    cookie = request.cookies
+    session_token = cookie.get("login_session")
+
+    #nonce validation
+    valid_nonce, message = nonce_validation(args["Nonce"])
+    if(not valid_nonce):
+        return create_error_response(response, 409, message, args)
+    
+    #check if user is authenticated
+    is_user_authenticated, message = check_if_authenticated(cookie)
+    if not is_user_authenticated:
+        return create_error_response(response, 403, message, None)
+    
+    #create the user
+    userID = None
+    with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+        cursor.execute(get_user_id_using_session_token,(session_token,))
+        userID = cursor.fetchone()[0]
+        cursor.execute(get_username_using_user_id, (userID,))
+        userName = cursor.fetchone()[0]
+    user = User(userName, init_by_email=False)
+    
+    #delete session from db
+    was_session_deleted, message = user.logout(request)
+    if not was_session_deleted:
+        return create_error_response(response, 403, message, args)
+    
+    #delete cookie from user browser
+    message = "User logged out"
+    response.data = jsonify({'message': message}).get_data()
+    response.set_cookie(key="login_session", value=session_token, max_age=-1, samesite="Lax")
+    response.status_code = 200
+
+    return response
 
 @app.route('/forgot-password/', methods = ["POST"])
 def forgot_password():

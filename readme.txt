@@ -3,10 +3,10 @@ This is a learning excersie for me to learn how user authentication works.
 Basic Goals:
     Signup
     Login
-    Logout
     Remember Me
-    Forgot Password
+    Logout
     Logout everywhere
+    Forgot Password
 
 Advanced goals:
     Email Verification
