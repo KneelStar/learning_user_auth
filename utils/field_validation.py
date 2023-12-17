@@ -97,13 +97,13 @@ def check_if_session_exists_in_db(session:str):
 
 def check_if_authenticated(cookie:dict[str, str]):
     if not cookie:
-        return False, "Please login to view cock"
+        return False, "No cookie in request"
     
     session_id = cookie.get("login_session")
 
     does_session_exist_in_db = check_if_session_exists_in_db(session_id)
     if not does_session_exist_in_db:
-        return False, "Please login to view cock"
+        return False, "User session in cookie not found in db"
     
     return True, "User is authenticated/logged in"
 

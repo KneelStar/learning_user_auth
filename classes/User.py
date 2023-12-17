@@ -67,6 +67,7 @@ class User:
 
                 cursor.execute(get_email_using_username,(self.get_user_id(),))
                 self.set_email(cursor.fetchone()[0])
+            db_connection.commit()
 
     def validate_password(self, password:str):
         is_it_valid_password = bcrypt.checkpw(password.encode('utf-8'), self.get_password_hash().encode('utf-8'))
@@ -113,16 +114,32 @@ class User:
         return False, None, "Login Error. Coudn't create session"
     
     def logout(self, request:Request):
-        flag = request.form.get["Flag"]
+        flag = request.form["Session_flag"]
         cookie = request.cookies
-
+        session_id = cookie.get("login_session")
+        print(session_id, self.get_user_id())
+        
         if flag == "regular":
-            # logout current session
-            pass
+            # delete current session from db
+            try:
+                with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+                    cursor.execute(delete_one_session, (self.get_user_id(), session_id,))
+                    db_connection.commit()
+                return True, "Session deleted from db"
+            except:
+                return False, "Error occured while deleting session from db."
+            
         if flag == "all":
-            # logout all session
-            pass
-        pass
+            # deleting all sessions from db
+            try:
+                with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+                    cursor.execute(delete_all_sessions, (self.get_user_id(),))
+                    db_connection.commit()
+                return True, "All user sessions deleted from db"
+            except:
+                return False, "Error occured while deleting all sessions from db."
+            
+        return False, "Session could not be deleted from db. Weird flag value maybe?"
 
     def validate_cookie(self):
         pass
@@ -165,6 +182,7 @@ class User:
             with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
                 cursor.execute(get_password_hash_using_user_id, (self.get_user_id(),))
                 self.set_password_hash(cursor.fetchone()[0])
+                db_connection.commit()
 
         return self._password_hash
 

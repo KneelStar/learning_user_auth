@@ -33,6 +33,7 @@ def home():
 
     is_user_authenticated, message = check_if_authenticated(cookie)
     if not is_user_authenticated:
+        message = "Please login to view cock"
         return create_error_response(response, 403, message, None)
 
     return render_template('website/cock.html')
@@ -41,6 +42,12 @@ def home():
 def signup():
     args = request.form
     response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if is_user_authenticated:
+        message = "You are already logged in silly"
+        return create_error_response(response, 403, message, None)
 
     valid_input, message = signup_input_validation(args["Username"], args["Email"], args["Password"])
     if not valid_input:
@@ -71,6 +78,12 @@ def signup():
 def login():
     args = request.form
     response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if is_user_authenticated:
+        message = "You are already logged in silly"
+        return create_error_response(response, 403, message, None)
     
     #user input validation. user can use username or email, and password to login
     valid_input, message = [None, None]
@@ -111,7 +124,14 @@ def login():
 @app.route('/logout/', methods = ["POST"])
 def logout():
     args = request.form
-    response = response()
+    response = make_response()
+
+    #check if user already logged in
+    is_user_authenticated, message = check_if_authenticated(request.cookies)
+    if not is_user_authenticated:
+        message = "You are not even logged in"
+        return create_error_response(response, 403, message, None)
+
     cookie = request.cookies
     session_token = cookie.get("login_session")
 
@@ -130,20 +150,22 @@ def logout():
     with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
         cursor.execute(get_user_id_using_session_token,(session_token,))
         userID = cursor.fetchone()[0]
-    
-    user = User(userID, init_by_email=False)
-
-    # WONT WORK BECAUSE SET CREATES A NEW RANDOM SESSION FOR THAT INSTANCE OF USER 
-    # BASED ON THE ASSUMPTION THAT SET METHOD WILL ONLY BE CALLED WHEN CREATING 
-    # NEW SESSION. MAYBE RENAMING IT TO USER.CREATE_NEW_SESSION() AND THEN 
-    # SET_SESSION() CAN BE USED FOR THIS ?????
-    # user.set_current_session(session_token)
+        cursor.execute(get_username_using_user_id, (userID,))
+        userName = cursor.fetchone()[0]
+    user = User(userName, init_by_email=False)
     
     #delete session from db
-    was_session_deleted, message = user.logout(cookie)
+    was_session_deleted, message = user.logout(request)
+    if not was_session_deleted:
+        return create_error_response(response, 403, message, args)
+    
+    #delete cookie from user browser
+    message = "User logged out"
+    response.data = jsonify({'message': message}).get_data()
+    response.set_cookie(key="login_session", value=session_token, max_age=-1, samesite="Lax")
+    response.status_code = 200
 
-    #delete cookie
-    pass
+    return response
 
 @app.route('/forgot-password/', methods = ["POST"])
 def forgot_password():
