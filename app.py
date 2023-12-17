@@ -169,4 +169,23 @@ def logout():
 
 @app.route('/forgot-password/', methods = ["POST"])
 def forgot_password():
+    args = request.form
+    response = make_response()
+
+    #username or email
+    valid_input, message = [None, None]
+    if(args.get('Username')):
+        valid_input, message = is_valid_username(args["Username"])
+    else:
+        valid_input, message = is_valid_email(args["Email"])
+
+    if(not valid_input):
+        return create_error_response(response, 409, message, args)
+    
+    #nonce validation
+    valid_nonce, message = nonce_validation(args["Nonce"])
+    if(not valid_nonce):
+        return create_error_response(response, 409, message, args)
+
+    #send forgot pass token to user email
     pass
