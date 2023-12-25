@@ -1,33 +1,24 @@
 import smtplib
 from email.mime.text import MIMEText
+import utils.emailer_creds as emailer_creds
 
-def send_email(subject, body, to_email):
-    # Your email configuration
-    smtp_server = 'your_smtp_server'
-    smtp_port = 587  # Change to the appropriate port for your SMTP server
-    smtp_username = 'your_email@example.com'
-    smtp_password = 'your_email_password'
+def send_email(subject:str, body:str, sender:str, recipients:list[str]|str):
+    server = emailer_creds.get_smpt_server_of(sender)
+    port = emailer_creds.get_smpt_port_of(sender)
+    username = emailer_creds.get_smpt_username_of(sender)
+    password = emailer_creds.get_smpt_password_of(sender)
 
-    # Create the MIMEText object for the email body
     msg = MIMEText(body)
     msg['Subject'] = subject
-    msg['From'] = smtp_username
-    msg['To'] = to_email
+    msg['From'] = sender
+    msg['To'] = ', '.join(recipients) if type(recipients) == list else recipients
+    
+    try:
+        with smtplib.SMTP_SSL(server, port) as smtp_server:
+            smtp_server.login(username, password)
+            smtp_server.sendmail(sender, recipients, msg.as_string())
+    except Exception as e:
+        print(e)
+        return False, "Could not send email"
 
-    # Establish a connection to the SMTP server
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
-        # Start the TLS connection (for secure communication)
-        server.starttls()
-
-        # Log in to the SMTP server
-        server.login(smtp_username, smtp_password)
-
-        # Send the email
-        server.sendmail(smtp_username, to_email, msg.as_string())
-
-# Example usage:
-# subject = 'Test Email'
-# body = 'This is a test email sent from Python.'
-# to_email = 'recipient@example.com'
-
-# send_email(subject, body, to_email)
+    return True, "Email sent"

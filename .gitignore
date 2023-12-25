@@ -1,2 +1,3 @@
 db.py
 **/__pycache__/*
+utils/emailer_creds.py

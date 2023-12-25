@@ -7,6 +7,7 @@ Basic Goals:
     Logout
     Logout everywhere
     Forgot Password
+    Reset Password
 
 Advanced goals:
     Email Verification

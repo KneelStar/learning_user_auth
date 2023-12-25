@@ -2,7 +2,7 @@ from flask import Flask, jsonify, Response
 from classes.User import User
 from datetime import *
 
-def create_error_response(response:Response, status_code: int, message: str, args:dict):
+def create_response(response:Response, status_code: int, message: str, args:dict):
     response.data = jsonify({'message': message, "args": args}).get_data()
     response.status_code = status_code
     return response
