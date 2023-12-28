@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, url_for
 from classes.User import User
 from classes.New_User import New_User
 from utils.field_validation import *
@@ -225,5 +225,14 @@ def forgot_password():
             cursor.execute(get_email_using_username, (args["Username"],))
             user_email_address = cursor.fetchone()[0]
 
-    send_email("Password Reset Link", password_reset_token, "DEFAULT_EMAIL", user_email_address)
+    send_email("Password Reset Link", request.url_root + url_for('reset_password', password_reset_token)[1:], "DEFAULT_EMAIL", user_email_address)
     return create_response(response, 200, "Email with a reset password link has been emailed to you", args)
+
+@app.route('/reset-password/<reset_pass_token>', methods = ["POST"])
+def reset_password(reset_pass_token):
+    #check if token is valid
+    #if not return failure
+    #check if new pass is valid
+    #save new pass to db
+    #return success
+    pass
