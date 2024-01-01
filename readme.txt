@@ -108,6 +108,9 @@ Learning Sources Used:
     
     Flask Blueprints Make Your Apps Modular & Professional:
         https://www.youtube.com/watch?v=_LMiUOYDxzE
+
+    How to Send Emails in Python with Gmail:
+        https://mailtrap.io/blog/python-send-email-gmail/
         
     https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal
     

@@ -1,3 +1,4 @@
+import bcrypt
 from flask import Flask, render_template, request, make_response, url_for
 from classes.User import User
 from classes.New_User import New_User
@@ -179,7 +180,7 @@ def forgot_password():
         return create_response(response, 409, message, args)
 
     #1. username or email valid? 
-    #2. If so, but doesn't exist in db, return 200 even if username/email is not in db. 
+    #2. If field is vaild but doesn't exist in db, return 200 even if username/email is not in db. 
         #It's lying but good for security to not tell if the username/email someone entered exists or 
         #not. Avoids brute force attacks.
     #3. get userid from username/email
@@ -225,14 +226,67 @@ def forgot_password():
             cursor.execute(get_email_using_username, (args["Username"],))
             user_email_address = cursor.fetchone()[0]
 
-    send_email("Password Reset Link", request.url_root + url_for('reset_password', password_reset_token)[1:], "DEFAULT_EMAIL", user_email_address)
+    send_email("Password Reset Link", request.url_root + url_for('reset_password', reset_pass_token=password_reset_token)[1:], "DEFAULT_EMAIL", user_email_address)
     return create_response(response, 200, "Email with a reset password link has been emailed to you", args)
 
 @app.route('/reset-password/<reset_pass_token>', methods = ["POST"])
 def reset_password(reset_pass_token):
-    #check if token is valid
-    #if not return failure
-    #check if new pass is valid
-    #save new pass to db
+    args = request.form
+    response = make_response()
+
+    #nonce validation
+    valid_nonce, message = nonce_validation(args["Nonce"])
+    if(not valid_nonce):
+        return create_response(response, 409, message, args)
+
+    token_exist, token_expired = [False, False]
+
+    with db.get_database_connection() as db_connection, db_connection.cursor() as cursor:
+        #check if token is valid (exist & not expired)
+        cursor.execute(count_if_password_reset_toekn_exist_in_db, (reset_pass_token,))
+        if cursor.fetchone()[0] == 1:
+            token_exist = True
+        
+        cursor.execute(get_password_reset_token_expiry, (reset_pass_token,))
+        if datetime.now() > cursor.fetchone()[0]:
+            token_expired = True
+        
+        #if not return failure
+        if not token_exist or token_expired:
+            return create_response(response, 409, "Token is not valid", args)
+    
+        #check if new pass is valid
+        new_pass = args.get("New Pass")
+        new_pass_confirmation = args.get("New Pass Confirmation")
+
+        if not new_pass == new_pass_confirmation:
+            return create_response(response, 409, "New Password and Confirm Password are not same", args)
+        
+        is_new_pass_valid, message = is_valid_password(new_pass)
+        if not is_new_pass_valid:
+            return create_response(response, 409, message, args)
+    
+        #get userid
+        cursor.execute(get_user_id_using_password_reset_token, (reset_pass_token,))
+        userID = cursor.fetchone()[0]
+
+        #get user pass salt
+        cursor.execute(get_password_salt_using_user_id, (userID,))
+        user_password_salt = cursor.fetchone()[0]
+
+        #save new pass to db
+        hashed_password = bcrypt.hashpw(new_pass.encode('utf-8'), user_password_salt.encode('utf-8'))
+        cursor.execute(update_user_pass_using_userID, (hashed_password.decode('utf-8'), userID,))
+        db_connection.commit()
+
+        #make reset-password-token invalid
+        cursor.execute(update_reset_token_to_invalid_after_used_successfully, (reset_pass_token,))
+        db_connection.commit()
+    
     #return success
-    pass
+    return create_response(response, 200, "Password Reset Successfully", args)
+    
+    # can be made more sophisticated by checking if old pass equals new pass. if true, make it invalid. 
+    # also could send email when passwords are reset 
+    # this is good enough for a learning excerise though
+    
