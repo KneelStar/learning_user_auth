@@ -37,7 +37,7 @@ def is_valid_password(password):
 
     return True, "Valid Password"
 
-def check_if_username_or_email_in_db(identifier, email_check):
+def check_if_username_or_email_in_db(identifier:str, email_check:bool):
     does_it_exist_in_db = None
     message = None
 

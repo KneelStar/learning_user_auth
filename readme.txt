@@ -7,6 +7,7 @@ Basic Goals:
     Logout
     Logout everywhere
     Forgot Password
+    Reset Password
 
 Advanced goals:
     Email Verification
@@ -75,18 +76,44 @@ CREATE TABLE Nonces (
 );
 
 Learning Sources Used:
-    https://www.youtube.com/playlist?list=PL4JDh0LtP7jr0nNuoW-KB-O2uABkaMhL1
-    https://youtu.be/UBUNrFtufWo?si=oELr4RowuE496C3
-    https://youtu.be/O1cRJWYF-g4?si=pTQaj3rIeR-CIs8c
-    https://youtu.be/rhi1eIjSbvk?si=sCaV7UX6E3B6W0HM
-    https://youtu.be/uj_4vxm9u90?si=DepUqPBHmS5Y_CqM
-    https://youtu.be/iD49_NIQ-R4?si=ORXCto71d92VcH-x
-    https://youtu.be/3pZ3Nh8tgTE?si=sGmPEwUes9PH1AYB
-    https://youtu.be/ZV5yTm4pT8g?si=e_rZpjG5FBKhQazc
-    https://youtu.be/FVmxtmzyrSw?si=IxOpWStgQ8nmEh2l
-    https://youtu.be/Tw5LupcpKS4?si=Sk3qjbEq2uq1pk7S
-    https://www.youtube.com/watch?v=_LMiUOYDxzE
+    Build a User Login System with Flask and MongoDB:
+        https://www.youtube.com/playlist?list=PL4JDh0LtP7jr0nNuoW-KB-O2uABkaMhL1
+    
+    Session vs Token Authentication in 100 Seconds:
+        https://youtu.be/UBUNrFtufWo?si=oELr4RowuE496C3
+    
+    What Is Single Sign-on (SSO)? How It Works:
+        https://youtu.be/O1cRJWYF-g4?si=pTQaj3rIeR-CIs8c
+    
+    "Basic Authentication" in Five Minutes:
+        https://youtu.be/rhi1eIjSbvk?si=sCaV7UX6E3B6W0HM
+    
+    Design a Simple Authentication System | System Design Interview Prep:
+        https://youtu.be/uj_4vxm9u90?si=DepUqPBHmS5Y_CqM
+    
+    How to Store JWT for Authentication:
+        https://youtu.be/iD49_NIQ-R4?si=ORXCto71d92VcH-x
+    
+    OAuth terminologies and flows explained - OAuth tutorial - Java Brains:
+        https://youtu.be/3pZ3Nh8tgTE?si=sGmPEwUes9PH1AYB
+    
+    OAuth 2 Explained In Simple Terms:
+        https://youtu.be/ZV5yTm4pT8g?si=e_rZpjG5FBKhQazc
+    
+    Stop using JSON Web Tokens. Use Cookies & Server Sessions instead:
+        https://youtu.be/FVmxtmzyrSw?si=IxOpWStgQ8nmEh2l
+    
+    How to Create a Secure REST API with Node.js and Express:
+        https://youtu.be/Tw5LupcpKS4?si=Sk3qjbEq2uq1pk7S
+    
+    Flask Blueprints Make Your Apps Modular & Professional:
+        https://www.youtube.com/watch?v=_LMiUOYDxzE
+
+    How to Send Emails in Python with Gmail:
+        https://mailtrap.io/blog/python-send-email-gmail/
+        
     https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_modal
+    
     ChatGpt
 
 Side note, these are the commands to create a virtual env, and start the virtual env
