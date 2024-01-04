@@ -18,7 +18,7 @@ Advanced goals:
     Reduce session db quries by implementing jwt like features
 
 Running the code:
-1. Create a database with the following schema and the credentials in db.py
+1. Create a database with the following schema and the credentials in db.py (rename non_sensitive_db.py to db.py)
 2. Use the ./run command to start the flask website
 3. Use postman to send the queries (you will need to manually add nonces in database to complete requests successfully) 
 
